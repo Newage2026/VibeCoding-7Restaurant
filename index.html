@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山珍海味餐廳 - 訂位系統原型</title>
+    <style>
+        :root {
+            --primary: #c23616;
+            --secondary: #fbc531;
+            --dark: #2f3640;
+            --light: #f5f6fa;
+            --gray: #718093;
+            --border: #dcdde1;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft JhengHei", sans-serif;
+        }
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--dark);
+            color: white;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .header-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+            padding: 5px 10px;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        .prototype-banner {
+            background-color: #e67e22;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 5px;
+            font-size: 1.3rem;
+        }
+        .hero {
+            text-align: center;
+            padding: 30px 15px;
+            background: linear-gradient(135deg, var(--dark), var(--primary));
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .hero h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: center;
+            width: 100%;
+        }
+        .btn:hover {
+            background-color: #b33012;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        @media (max-width: 500px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .menu-item {
+            border-left: 3px solid var(--secondary);
+            padding-left: 10px;
+            margin-bottom: 10px;
+        }
+        .menu-item .title {
+            font-weight: bold;
+        }
+        .menu-item .price {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .rule-list {
+            list-style-type: none;
+        }
+        .rule-list li {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 20px;
+        }
+        .rule-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .selector-box {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .selector-item {
+            border: 1px solid var(--border);
+            padding: 10px;
+            text-align: center;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            background: #fff;
+        }
+        .selector-item.selected {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            font-weight: bold;
+        }
+        .selector-item.disabled {
+            background-color: #eee;
+            color: #aaa;
+            cursor: not-allowed;
+            border-color: #ddd;
+        }
+        .selector-item .subtext {
+            font-size: 0.75rem;
+            display: block;
+            opacity: 0.8;
+        }
+        .review-section {
+            background-color: #fff8ed;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
+        }
+        .review-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+            border-bottom: 1px dashed #ffeaa7;
+            padding-bottom: 4px;
+        }
+        .review-row .val {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .hidden {
+            display: none !important;
+        }
+        .success-box {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .success-box h3 {
+            margin-bottom: 10px;
+        }
+        .model-data-box {
+            background: #2f3640;
+            color: #f5f6fa;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        .model-data-title {
+            color: var(--secondary);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-top: 40px;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="prototype-banner">
+        ⚠️ 本網頁為【訂位系統原型範本】，全面落實誠實原則，無對接任何正式後台。
+    </div>
+
+    <header>
+        <div class="header-container">
+            <div class="logo">🦞 山珍海味餐廳</div>
+            <nav class="nav-links">
+                <a href="#intro">首頁</a>
+                <a href="#menu">菜單</a>
+                <a href="#tables">桌型</a>
+                <a href="#booking">預約訂位</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- 首頁區塊 -->
+        <section id="intro" class="hero">
+            <h1>山珍海味餐廳</h1>
+            <p style="margin-bottom: 15px; font-weight: 300;">頂級海鮮與在地山珍的交織交響樂</p>
+            <p style="font-size: 0.95rem; color: var(--secondary); font-weight: bold; margin-bottom: 20px;">
+                「堅持現撈現做、產地直達、誠信無欺」
+            </p>
+            <a href="#booking" class="btn" style="background-color: var(--secondary); color: var(--dark);">立即預約訂位</a>
+        </section>
+
+        <!-- 菜單與低消 -->
+        <section id="menu" class="card">
+            <h2>菜單與低消說明</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <div class="title">招牌清蒸龍蝦</div>
+                    <div class="price">NT$ 1,680 / 隻</div>
+                </div>
+                <div class="menu-item">
+                    <div class="title">極品爐烤海陸雙拼套餐</div>
+                    <div class="price">NT$ 2,200 / 每人</div>
+                </div>
+                <div class="menu-item">
+                    <div class="title">現切厚切頂級肋眼牛排</div>
+                    <div class="price">NT$ 1,200 / 份</div>
+                </div>
+                <div class="menu-item">
+                    <div class="title">主廚特製海鮮干貝燉飯</div>
+                    <div class="price">NT$ 480 / 份</div>
+                </div>
+            </div>
+            <div style="margin-top: 15px; background: #fff5f5; padding: 12px; border-radius: 4px; font-size: 0.9rem;">
+                <strong>💰 店內基本低消：</strong> 每位成人低消 NT$ 500 元。<br>
+                <strong>⚡ 服務費：</strong> 結帳需另加 10% 服務費。
+            </div>
+        </section>
+
+        <!-- 桌型說明 -->
+        <section id="tables" class="card">
+            <h2>餐廳桌型說明</h2>
+            <div class="menu-item">
+                <div class="title">吧台區 (1-2人)</div>
+                <p style="font-size: 0.85rem; color: var(--gray);">適合單人或情侶，可近距離觀看主廚料理。不可併桌。</p>
+            </div>
+            <div class="menu-item">
+                <div class="title">二人桌 / 四人桌</div>
+                <p style="font-size: 0.85rem; color: var(--gray);">溫馨靈活空間，【可視現場訂位狀況進行倂桌處理】。</p>
+            </div>
+            <div class="menu-item">
+                <div class="title">六人獨立包廂</div>
+                <p style="font-size: 0.85rem; color: var(--gray);">適合家庭、商務聚會，保障絕佳隱私。基本消費較高。</p>
+            </div>
+        </section>
+
+        <!-- 訂位規則 -->
+        <section class="card">
+            <h2>訂位規範與守則</h2>
+            <ul class="rule-list" style="font-size: 0.9rem; color: #2f3640;">
+                <li><strong>保留時間：</strong> 訂位座位僅保留 10 分鐘，逾時將自動取消並釋出座位。</li>
+                <li><strong>取消期限：</strong> 如需取消或變更，請於用餐日前 24 小時至系統或來電取消。</li>
+                <li><strong>未到處理：</strong> 累積 2 次無故未到（No-show）者，系統將暫停線上預約權限。</li>
+                <li><strong>特殊低消：</strong> 包廂基本低消另計，詳情請來電洽詢。</li>
+            </ul>
+        </section>
+
+        <!-- 預約訂位表單區塊 -->
+        <section id="booking" class="card">
+            <h2>線上預約訂位 (原型示範)</h2>
+            <form id="bookingForm" onsubmit="handleFormSubmit(event)">
+                
+                <!-- 1. 日期選擇 -->
+                <div class="form-group">
+                    <label for="bookDate">1. 選擇日期 *</label>
+                    <input type="date" id="bookDate" required onchange="updateSlots()">
+                </div>
+
+                <!-- 2. 人數選擇 -->
+                <div class="form-group">
+                    <label>2. 選擇人數 *</label>
+                    <div class="selector-box">
+                        <div class="selector-item" onclick="selectPeople(2)">2 人<span class="subtext">標準/吧台</span></div>
+                        <div class="selector-item" onclick="selectPeople(4)">4 人<span class="subtext">標準桌型</span></div>
+                        <div class="selector-item" onclick="selectPeople(6)">6 人<span class="subtext">獨立包廂</span></div>
+                    </div>
+                    <input type="hidden" id="bookPeople" required>
+                </div>
+
+                <!-- 3. 時段選擇 (少量 JavaScript 示範額滿時段灰色不可點) -->
+                <div class="form-group">
+                    <label>3. 選擇時段 *</label>
+                    <div id="timeSlotContainer" class="selector-box">
+                        <!-- 由 JS 根據日期動態渲染時段 -->
+                        <div class="selector-item disabled">請先選擇日期與人數</div>
+                    </div>
+                    <input type="hidden" id="bookTime" required>
+                </div>
+
+                <!-- 4. 顯示對應桌型與賸餘名額 -->
+                <div id="tableTypeTip" style="display:none; margin-bottom:15px; padding:10px; background:#e1f5fe; border-left:4px solid #0288d1; font-size:0.9rem;">
+                    <!-- JS 動態寫入 -->
+                </div>
+
+                <!-- 5. 顧客基本資料 -->
+                <div class="form-group">
+                    <label for="custName">顧客姓名 *</label>
+                    <input type="text" id="custName" placeholder="請輸入您的真實姓名" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="custPhone">手機號碼 *</label>
+                    <input type="tel" id="custPhone" placeholder="例如: 0912345678" pattern="^09[0-9]{8}$" title="請輸入正確的10碼手機號碼，如 0912345678" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="custSpecial">特殊需求簡述 (選填)</label>
+                    <textarea id="custSpecial" rows="2" placeholder="如有過敏原、慶生或行動不便需求請備註"></textarea>
+                </div>
+
+                <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="childChair" style="width: auto;">
+                    <label href="#booking" style="margin-bottom: 0; cursor:pointer;" for="childChair">需要兒童安全座椅</label>
+                </div>
+
+                <!-- 規則再次顯示重要規則 (送出前再次顯示) -->
+                <div style="background-color: #fff; border: 1px dashed var(--primary); padding: 12px; margin-bottom: 15px; border-radius: 4px; font-size: 0.85rem;">
+                    <span style="color: var(--primary); font-weight: bold;">⚠️ 再次提醒重要規則：</span>
+                    座位僅保留 <span style="color:var(--primary); font-weight:bold;">10 分鐘</span>。取消須於 24 小時前提出。未到處理依店內規範。每人低消 NT$ 500。
+                </div>
+
+                <!-- 驗證並預覽按鈕 -->
+                <button type="button" class="btn" onclick="triggerReview()">檢查資料並核對預覽</button>
+
+                <!-- 二次確認區塊 (親眼看、親手確認) -->
+                <div id="reviewSection" class="review-section">
+                    <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 10px; text-align: center;">🔎 請再次親眼核對您的訂位內容</h3>
+                    <div class="review-row"><span>預約日期：</span><span id="revDate" class="val">-</span></div>
+                    <div class="review-row"><span>預約人數：</span><span id="revPeople" class="val">-</span></div>
+                    <div class="review-row"><span>分配桌型：</span><span id="revTableType" class="val">-</span></div>
+                    <div class="review-row"><span>預約時段：</span><span id="revTime" class="val">-</span></div>
+                    <div class="review-row"><span>顧客姓名：</span><span id="revName" class="val">-</span></div>
+                    <div class="review-row"><span>聯絡電話：</span><span id="revPhone" class="val">-</span></div>
+                    <div class="review-row"><span>兒童座椅：</span><span id="revChair" class="val">-</span></div>
+                    <div class="review-row"><span>特殊需求：</span><span id="revSpecial" class="val">-</span></div>
+                    
+                    <button type="submit" class="btn" style="margin-top: 15px; background-color: #27ae60;">確認送出訂位資料</button>
+                </div>
+            </form>
+
+            <!-- 送出成功顯示框 -->
+            <div id="successBox" class="success-box hidden">
+                <h3>🎉 預約成功！訂位已確認</h3>
+                <p>系統已為您產生正式的原型預約代碼：<strong id="resNumber" style="color: var(--primary); font-size: 1.2rem;">-</strong></p>
+                <p style="font-size: 0.85rem; margin-top: 5px; color: #555;">請牢記您的訂位編號，並於用餐當日準時出席。</p>
+                <button class="btn" style="margin-top:15px; background:var(--dark);" onclick="resetForm()">建立下一筆預約</button>
+            </div>
+
+        </section>
+
+        <!-- 要求的【資料模型】展示區 -->
+        <section class="card">
+            <h2>頁面後端模擬資料模型 (Data Model)</h2>
+            <p style="font-size: 0.85rem; color: var(--gray); margin-bottom: 10px;">本區塊即時對映並列印當前畫面的動態狀態模型，以落實系統誠實原則。</p>
+            
+            <div class="model-data-box">
+                <div class="model-data-title">[TableType & CapacityRule 模型]</div>
+                <div id="mdTableType">TableType: 吧台區 (1-2人) / 標準雙人/四人桌 (可併桌) / 六人包廂</div>
+                <div id="mdCapacity">CapacityRule: 滿座時段自動禁用灰底、桌型依人數嚴格過濾</div>
+            </div>
+
+            <div class="model-data-box">
+                <div class="model-data-title">[TimeSlot 模型狀態]</div>
+                <div id="mdTimeSlot">當前可用時段狀態：尚未載入</div>
+            </div>
+
+            <div class="model-data-box">
+                <div class="model-data-title">[Reservation & SpecialRequest 當前輸入結構]</div>
+                <pre id="mdReservation">Reservation: {}</pre>
+                <pre id="mdSpecial">SpecialRequest: {}</pre>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>© 2026 山珍海味餐廳 ｜ 全網頁純前端技術展示原型範本</p>
+        <p style="font-size:0.75rem; margin-top:5px; color:#aaa;">提醒：本網頁為前端練習作，不會真正儲存或寄送任何個人私密資料。</p>
+    </footer>
+
+    <script>
+        // 模擬的各時段剩餘名額 (依日期與人數變化)
+        const mockSlots = {
+            "11:30": { capacity: 3, label: "名額充足" },
+            "13:00": { capacity: 0, label: "已額滿" }, // 測試額滿顯示灰色不可點
+            "17:30": { capacity: 1, label: "最後賸餘1桌" },
+            "19:30": { capacity: 4, label: "名額充足" }
+        };
+
+        let currentReservation = {
+            date: "",
+            people: null,
+            tableType: "",
+            timeSlot: "",
+            name: "",
+            phone: "",
+            childChair: false,
+            specialRequest: ""
+        };
+
+        // 頁面初始化：限制日期只能選擇今天及以後，防止選擇過去日期邊界錯誤
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('bookDate').setAttribute('min', today);
+
+        function updateModelDisplay() {
+            document.getElementById('mdReservation').textContent = "Reservation: " + JSON.stringify({
+                date: currentReservation.date,
+                people: currentReservation.people,
+                tableType: currentReservation.tableType,
+                timeSlot: currentReservation.timeSlot,
+                name: currentReservation.name,
+                phone: currentReservation.phone
+            }, null, 2);
+
+            document.getElementById('mdSpecial').textContent = "SpecialRequest: " + JSON.stringify({
+                childChair: currentReservation.childChair,
+                text: currentReservation.specialRequest
+            }, null, 2);
+        }
+
+        function selectPeople(num) {
+            currentReservation.people = num;
+            
+            // 決定桌型
+            if(num === 2) currentReservation.tableType = "吧台區或標準雙人桌";
+            else if(num === 4) currentReservation.tableType = "標準四人桌 (可現場調整倂桌)";
+            else if(num === 6) currentReservation.tableType = "獨立六人包廂";
+
+            // 更改畫面上選取狀態
+            const items = document.querySelectorAll('#bookPeople ~ .selector-box .selector-item');
+            items.forEach((item, idx) => {
+                if((idx === 0 && num === 2) || (idx === 1 && num === 4) || (idx === 2 && num === 6)) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+            document.getElementById('bookPeople').value = num;
+
+            // 更新桌型提示
+            const tip = document.getElementById('tableTypeTip');
+            tip.style.display = "block";
+            tip.innerHTML = `<strong>📍 系統為您媒合桌型：</strong> ${currentReservation.tableType}。賸餘桌數依下方時段顯示。`;
+
+            updateSlots();
+            updateModelDisplay();
+        }
+
+        function updateSlots() {
+            const dateVal = document.getElementById('bookDate').value;
+            currentReservation.date = dateVal;
+            const peopleVal = currentReservation.people;
+
+            const container = document.getElementById('timeSlotContainer');
+            
+            if (!dateVal) {
+                container.innerHTML = '<div class="selector-item disabled" style="grid-column: span 3;">請先選擇日期</div>';
+                return;
+            }
+            if (!peopleVal) {
+                container.innerHTML = '<div class="selector-item disabled" style="grid-column: span 3;">請選擇訂位人數</div>';
+                return;
+            }
+
+            // 渲染時段
+            container.innerHTML = "";
+            let modelSlotsStr = [];
+            
+            for (const [time, info] of Object.entries(mockSlots)) {
+                const item = document.createElement('div');
+                item.className = "selector-item";
+                
+                // 模擬邊界規則：13:00 為已額滿
+                if (info.capacity === 0) {
+                    item.classList.add('disabled');
+                    item.innerHTML = `${time}<span class="subtext">${info.label}</span>`;
+                    modelSlotsStr.push(`${time}: [額滿禁用]`);
+                } else {
+                    if (currentReservation.timeSlot === time) {
+                        item.classList.add('selected');
+                    }
+                    item.innerHTML = `${time}<span class="subtext">${info.label}</span>`;
+                    item.onclick = function() { selectTime(time); };
+                    modelSlotsStr.push(`${time}: [賸餘容量:${info.capacity}]`);
+                }
+                container.appendChild(item);
+            }
+
+            document.getElementById('mdTimeSlot').textContent = "當前可用時段狀態: " + modelSlotsStr.join(" | ");
+            updateModelDisplay();
+        }
+
+        function selectTime(time) {
+            currentReservation.timeSlot = time;
+            document.getElementById('bookTime').value = time;
+            
+            // 重新刷新時段選取視覺
+            updateSlots();
+        }
+
+        function triggerReview() {
+            // 抓取即時欄位資料
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+            const special = document.getElementById('custSpecial').value.trim();
+            const chair = document.getElementById('childChair').checked;
+
+            currentReservation.name = name;
+            currentReservation.phone = phone;
+            currentReservation.specialRequest = special;
+            currentReservation.childChair = chair;
+
+            updateModelDisplay();
+
+            // 檢查前端防錯邊界
+            if (!currentReservation.date) { alert("請填寫預約日期！"); return; }
+            if (!currentReservation.people) { alert("請選擇預約人數！"); return; }
+            if (!currentReservation.timeSlot) { alert("請選擇預約時間段！"); return; }
+            if (name === "") { alert("請填寫姓名（不可為空或純空格）！"); return; }
+            if (!phone.match(/^09[0-9]{8}$/)) { alert("請填寫正確的手機號碼（10碼數字，且為09開頭）！"); return; }
+
+            // 渲染二次核對面板 (落實親眼查看驗證原則)
+            document.getElementById('revDate').textContent = currentReservation.date;
+            document.getElementById('revPeople').textContent = currentReservation.people + " 人";
+            document.getElementById('revTableType').textContent = currentReservation.tableType;
+            document.getElementById('revTime').textContent = currentReservation.timeSlot;
+            document.getElementById('revName').textContent = name;
+            document.getElementById('revPhone').textContent = phone;
+            document.getElementById('revChair').textContent = chair ? "需要" : "不需要";
+            document.getElementById('revSpecial').textContent = special ? special : "無";
+
+            document.getElementById('reviewSection').style.display = "block";
+            // 滾動移至核對區
+            document.getElementById('reviewSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            // 模擬系統成功：生成隨機的示範確認編號
+            const randNum = "SZHW-" + Math.floor(100000 + Math.random() * 900000);
+            
+            document.getElementById('resNumber').textContent = randNum;
+            
+            // 隱藏表單內容與核對區
+            document.getElementById('bookingForm').classList.add('hidden');
+            document.getElementById('reviewSection').style.display = "none";
+            
+            // 顯示成功區
+            document.getElementById('successBox').classList.remove('hidden');
+            document.getElementById('successBox').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            // 重置資料
+            currentReservation = {
+                date: "", people: null, tableType: "", timeSlot: "", name: "", phone: "", childChair: false, specialRequest: ""
+            };
+            
+            document.getElementById('bookingForm').reset();
+            document.getElementById('bookingForm').classList.remove('hidden');
+            document.getElementById('successBox').classList.add('hidden');
+            
+            // 重設選鈕樣式
+            const items = document.querySelectorAll('.selector-item');
+            items.forEach(item => item.classList.remove('selected'));
+            
+            document.getElementById('bookPeople').value = "";
+            document.getElementById('bookTime').value = "";
+            document.getElementById('tableTypeTip').style.display = "none";
+
+            updateSlots();
+            updateModelDisplay();
+        }
+    </script>
+</body>
+</html>
